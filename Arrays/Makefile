@@ -3,23 +3,34 @@
 CC = gcc
 
 # Compiler flag
-CFLAGS = -Wall -Wextra -pedantic -std=c99
+CFLAGS = -Wall -Wextra -pedantic -std=gnu99 -g
 
 #Source files
-SRC = Sorting_strings.c
+#SRCS = Sorting_strings.c includes/snips.c
+SRCS = Querying_document.c includes/snips.c
+
+# Object files
+OBJS = $(SRCS:.c=.o)
+
+# Header files
+HDRS = includes/snips.h
 
 #Executable name
 
-EXE = strings_sorted
+EXE = Querying_document.out
 
 # Default target
 all: $(EXE)
 
 # Rule to build the executable
-$(EXE): $(SRC)
+$(EXE): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
+
+# Rule to build the object files
+%.o: %.c $(HDRS)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Clean target
 clean:
-	rm -f $(EXE)
+	rm -f $(EXE) $(OBJS)
 	
