@@ -8,7 +8,7 @@ CFLAGS = -fsanitize=address -Wall -Wextra -pedantic -std=gnu99 -g
 #Source files
 #SRCS = Sorting_strings.c includes/snips.c
 #SRCS = Querying_document.c includes/snips.c
-SRCS = Dynamic_array.c
+SRCS = Reversal_array.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)
@@ -18,7 +18,7 @@ OBJS = $(SRCS:.c=.o)
 
 #Executable name
 
-EXE = Dynamic_array.out
+EXE = Reverse_array.out
 
 # Default target
 all: $(EXE)
