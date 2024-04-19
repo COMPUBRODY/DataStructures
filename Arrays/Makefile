@@ -3,21 +3,22 @@
 CC = gcc
 
 # Compiler flag
-CFLAGS = -Wall -Wextra -pedantic -std=gnu99 -g
+CFLAGS = -fsanitize=address -Wall -Wextra -pedantic -std=gnu99 -g
 
 #Source files
 #SRCS = Sorting_strings.c includes/snips.c
-SRCS = Querying_document.c includes/snips.c
+#SRCS = Querying_document.c includes/snips.c
+SRCS = Dynamic_array.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)
 
 # Header files
-HDRS = includes/snips.h
+#HDRS = includes/snips.h
 
 #Executable name
 
-EXE = Querying_document.out
+EXE = Dynamic_array.out
 
 # Default target
 all: $(EXE)

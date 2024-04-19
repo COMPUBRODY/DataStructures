@@ -63,60 +63,178 @@
 #define MAX_CHARACTERS 1005
 #define MAX_PARAGRAPHS 5
 
-// char* kth_word_in_mth_sentence_of_nth_paragraph(char**** document, int k, int m, int n) {
+char* kth_word_in_mth_sentence_of_nth_paragraph(char**** document, int k, int m, int n) {
+    // Check if the document is not NULL
+    if (document == NULL) {
+        fprintf(stderr, "Error: Document is NULL\n");
+        return NULL;
+    }
 
-// }
+    // Check if n is within the valid range of paragraphs
+    if (n < 0 || n >= MAX_PARAGRAPHS) {
+        fprintf(stderr, "Error: Invalid paragraph index\n");
+        return NULL;
+    }
 
-// char** kth_sentence_in_mth_paragraph(char**** document, int k, int m) { 
+    // Retrieve the n-th paragraph from the document
+    char*** paragraph = document[n];
 
-// }
+    // Check if the retrieved paragraph is not NULL
+    if (paragraph == NULL) {
+        fprintf(stderr, "Error: Paragraph %d is NULL\n", n);
+        return NULL;
+    }
 
-// char*** kth_paragraph(char**** document, int k) {
+    // Check if m is within the valid range of sentences in the n-th paragraph
+    int sentence_count = 0;
+    while (paragraph[sentence_count] != NULL) {
+        sentence_count++;
+    }
+    if (m < 0 || m >= sentence_count) {
+        fprintf(stderr, "Error: Invalid sentence index in paragraph %d\n", n);
+        return NULL;
+    }
 
-// }
+    // Retrieve the m-th sentence from the n-th paragraph
+    char** sentence = paragraph[m];
+
+    // Check if the retrieved sentence is not NULL
+    if (sentence == NULL) {
+        fprintf(stderr, "Error: Sentence %d in paragraph %d is NULL\n", m, n);
+        return NULL;
+    }
+
+    // Check if k is within the valid range of words in the m-th sentence
+    int word_count = 0;
+    while (sentence[word_count] != NULL) {
+        word_count++;
+    }
+    if (k < 0 || k >= word_count) {
+        fprintf(stderr, "Error: Invalid word index in sentence %d of paragraph %d\n", m, n);
+        return NULL;
+    }
+
+    // Retrieve the k-th word from the m-th sentence
+    char* word = sentence[k];
+
+    // Return the pointer to the k-th word
+    return word;
+}
+
+char** kth_sentence_in_mth_paragraph(char**** document, int k, int m) { 
+    // Check if the document is not NULL
+    if (document == NULL) {
+        fprintf(stderr, "Error: Document is NULL\n");
+        return NULL;
+    }
+
+    // Check if m is within the valid range of paragraphs
+    if (m < 0 || m >= MAX_PARAGRAPHS) {
+        fprintf(stderr, "Error: Invalid paragraph index\n");
+        return NULL;
+    }
+
+    // Retrieve the m-th paragraph from the document
+    char*** paragraph = document[m];
+
+    // Check if the retrieved paragraph is not NULL
+    if (paragraph == NULL) {
+        fprintf(stderr, "Error: Paragraph %d is NULL\n", m);
+        return NULL;
+    }
+
+    // Check if k is within the valid range of sentences in the m-th paragraph
+    int sentence_count = 0;
+    while (paragraph[sentence_count] != NULL) {
+        sentence_count++;
+    }
+    if (k < 0 || k >= sentence_count) {
+        fprintf(stderr, "Error: Invalid sentence index in paragraph %d\n", m);
+        return NULL;
+    }
+
+    // Retrieve the k-th sentence from the m-th paragraph
+    char** sentence = paragraph[k];
+
+    // Return the pointer to the k-th sentence
+    return sentence;
+}
+
+
+char*** kth_paragraph(char**** document, int k) {
+    // Check if the document is not NULL
+    if (document == NULL) {
+        fprintf(stderr, "Error: Document is NULL\n");
+        return NULL;
+    }
+
+    // Check if k is within the valid range of paragraphs
+    if (k < 0 || k >= MAX_PARAGRAPHS) {
+        fprintf(stderr, "Error: Invalid paragraph index\n");
+        return NULL;
+    }
+
+    // Retrieve the k-th paragraph from the document
+    char*** paragraph = document[k];
+
+    // Return the pointer to the k-th paragraph
+    return paragraph;
+
+}
 
 char**** get_document(char* text) {
-    char**** document = NULL;
-    int paragraph_index = 0;
-    int sentence_index = 0;
-    int word_index = 0;
-
-    // Allocate memory for the document
-    document = (char****)malloc(sizeof(char***)*MAX_PARAGRAPHS);
-    assert(document != NULL); // check if memory allocation succeeds
-
-    // Initialize document
-    for(int i=0; i< MAX_PARAGRAPHS; i++){
-        document[i] = NULL;
+    char**** document = (char****)malloc(sizeof(char***)*MAX_PARAGRAPHS);
+    if (document == NULL) {
+        perror("Failed to allocate memory for document");
+        exit(EXIT_FAILURE);
     }
+    int paragraph_index = 0;
 
     // Split text into paragraphs
-    char* paragraph = strtok(text, "\n");
-    while(paragraph != NULL){
+    char* paragraph_start = text;
+    char* paragraph_end = strstr(paragraph_start, "\n");
+
+    while (paragraph_end != NULL) {
+        // Allocate memory for the paragraph
         document[paragraph_index] = (char***)malloc(sizeof(char**) * MAX_PARAGRAPHS);
-        assert(document[paragraph_index] != NULL); //Check if memory allocation succeeds
-
-        char* sentence = strtok(paragraph, ".");
-        while(sentence != NULL){
-            document[paragraph_index][sentence_index] = (char**)malloc(sizeof(char*)*MAX_PARAGRAPHS);
-            assert(document[paragraph_index][sentence_index] != NULL);
-
-            char* word = strtok(sentence, " ");
-            while (word != NULL) {
-                document[paragraph_index][sentence_index][word_index] = strdup(word);
-                assert(document[paragraph_index][sentence_index][word_index] != NULL);
-                word_index++;
-                word = strtok(NULL, " ");
-            }
-            sentence_index++;
-            word_index = 0;
-            sentence = strtok(NULL, ".");
+        if (document[paragraph_index] == NULL) {
+            perror("Failed to allocate memory for sentences in paragraph");
+            exit(EXIT_FAILURE);
         }
-        paragraph_index++;
-        sentence_index = 0;
-        paragraph = strtok(NULL, "\n");
 
+        // Copy the paragraph into the document
+        size_t paragraph_length = paragraph_end - paragraph_start;
+        document[paragraph_index][0] = (char**)malloc(sizeof(char*) * (paragraph_length + 1));
+        if (document[paragraph_index][0] == NULL) {
+            perror("Failed to allocate memory for sentences in paragraph");
+            exit(EXIT_FAILURE);
+        }
+        strncpy(document[paragraph_index][0], paragraph_start, paragraph_length);
+        document[paragraph_index][0][paragraph_length] = '\0'; // Null-terminate the string
+
+        // Move to the next paragraph
+        paragraph_start = paragraph_end + 1;
+        paragraph_end = strstr(paragraph_start, "\n");
+        paragraph_index++;
     }
+
+    // Handle the last paragraph
+    size_t last_paragraph_length = strlen(paragraph_start);
+    document[paragraph_index] = (char***)malloc(sizeof(char**) * MAX_PARAGRAPHS);
+    if (document[paragraph_index] == NULL) {
+        perror("Failed to allocate memory for sentences in paragraph");
+        exit(EXIT_FAILURE);
+    }
+    document[paragraph_index][0] = (char**)malloc(sizeof(char*) * (last_paragraph_length + 1));
+    if (document[paragraph_index][0] == NULL) {
+        perror("Failed to allocate memory for sentences in paragraph");
+        exit(EXIT_FAILURE);
+    }
+    strcpy(document[paragraph_index][0], paragraph_start);
+
+    // Increment the paragraph index
+    paragraph_index++;
+    
     return document;
 
 }
@@ -166,9 +284,12 @@ void print_paragraph(char*** paragraph) {
 
 void print_document(char**** document){
     for(int i=0; document[i] != NULL; i++){
+        printf("line 169\n");
         for(int j=0; document[i][j] != NULL; j++){
+            printf("line 171\n");
             for(int k=0; document[i][j][k] != NULL; k++){
-                printf("%s ", document[i][j][k]);
+                printf(" %s", document[i][j][k]);
+                printf("line 174\n");
             }
             printf("\n");
         }
@@ -176,12 +297,14 @@ void print_document(char**** document){
     }
 }
 
-int main() 
+int main()
 {
-    char* text = get_input_text();
-    char**** document = get_document(text);
+    //char* text = get_input_text();
+    char* text = "This is the first paragraph. This is the second paragraph.\nThis is the third paragraph.";
 
+    char**** document = get_document(text);
     print_document(document);
+    //print_paragraph(document[2]);
     // int q;
     // scanf("%d", &q);
 
